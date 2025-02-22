@@ -2,15 +2,19 @@
 import hmac
 import hashlib
 import json
+import os
 from fastapi import FastAPI, Request, Header, HTTPException
 import httpx
 from pydantic import BaseModel
+from dotenv import load_dotenv
+
+load_dotenv()
+
 
 app = FastAPI(title="GitHub to Telex Integration")
 
-# Integration configuration – typically loaded from integration.json or environment variables
-TELEX_WEBHOOK_URL = "https://telex.im/webhook/your-channel"  # Replace with your Telex channel webhook
-GITHUB_SECRET = "your_github_secret"  # Replace with your GitHub webhook secret
+TELEX_WEBHOOK_URL = os.getenv("TELEX_WEBHOOK_URL")
+GITHUB_SECRET = os.getenv("GITHUB_SECRET")
 
 class IntegrationConfig(BaseModel):
     integration_id: str
@@ -21,7 +25,6 @@ class IntegrationConfig(BaseModel):
     github_secret: str
     enabled: bool
 
-# For this example, we hard-code the configuration.
 integration_config = IntegrationConfig(
     integration_id="github-telex-integration",
     name="GitHub to Telex Integration",
@@ -57,7 +60,7 @@ async def github_webhook(
     except Exception as e:
         raise HTTPException(status_code=400, detail="Invalid JSON payload")
     
-    # Process the payload based on the event type (e.g., push event)
+    # Process the payload based on the event type
     message = ""
     if x_github_event == "push":
         pusher = payload.get("pusher", {}).get("name", "someone")
