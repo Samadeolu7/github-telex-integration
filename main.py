@@ -3,10 +3,13 @@ import hmac
 import hashlib
 import json
 import os
+import logging
 from fastapi import FastAPI, Request, Header, HTTPException
 import httpx
 from pydantic import BaseModel
 from dotenv import load_dotenv
+
+logging.basicConfig(level=logging.INFO)
 
 load_dotenv()
 
@@ -46,17 +49,22 @@ async def github_webhook(
     x_hub_signature_256: str = Header(None),
     x_github_event: str = Header("unknown")
 ):
+    logging.info("Received webhook event")
+    
     # Retrieve and verify the GitHub signature header
     body = await request.body()
     if not x_hub_signature_256:
+        logging.error("Missing GitHub signature header")
         raise HTTPException(status_code=400, detail="Missing GitHub signature header")
     if not verify_github_signature(body, x_hub_signature_256, integration_config.github_secret):
+        logging.error("Invalid signature")
         raise HTTPException(status_code=403, detail="Invalid signature")
     
     # Parse the JSON payload
     try:
         payload = await request.json()
     except Exception as e:
+        logging.error("Invalid JSON payload")
         raise HTTPException(status_code=400, detail="Invalid JSON payload")
     
     # Process the payload based on the event type
@@ -77,6 +85,7 @@ async def github_webhook(
         "status": "success",
         "username": pusher if x_github_event == "push" else "unknown"
     }
+    logging.info(f"Telex payload: {telex_payload}")
     
     # Send the summarized message to Telex via its webhook URL
     async with httpx.AsyncClient() as client:
@@ -85,9 +94,13 @@ async def github_webhook(
             json=telex_payload,
             headers={"Content-Type": "application/json"}
         )
+        logging.info(f"Telex Response Status Code: {telex_response.status_code}")
+        logging.info(f"Telex Response Content: {telex_response.content}")
         if telex_response.status_code not in [200, 202]:
+            logging.error("Failed to send message to Telex")
             raise HTTPException(status_code=500, detail="Failed to send message to Telex")
     
+    logging.info("Event processed and forwarded to Telex")
     return {"detail": "Event processed and forwarded to Telex"}
 
 if __name__ == "__main__":
