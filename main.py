@@ -10,7 +10,6 @@ from dotenv import load_dotenv
 
 load_dotenv()
 
-
 app = FastAPI(title="GitHub to Telex Integration")
 
 TELEX_WEBHOOK_URL = os.getenv("TELEX_WEBHOOK_URL")
@@ -86,7 +85,7 @@ async def github_webhook(
             json=telex_payload,
             headers={"Content-Type": "application/json"}
         )
-        if telex_response.status_code != 200:
+        if telex_response.status_code not in [200, 202]:
             raise HTTPException(status_code=500, detail="Failed to send message to Telex")
     
     return {"detail": "Event processed and forwarded to Telex"}
