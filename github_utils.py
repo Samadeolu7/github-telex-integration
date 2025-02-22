@@ -25,6 +25,24 @@ def create_telex_payload(event_type: str, payload: dict) -> dict:
         commits = payload.get("commits", [])
         commit_messages = "\n".join([f"- {commit.get('message')}" for commit in commits])
         message = f"GitHub Push Event by {username}:\n{commit_messages}"
+    
+    elif event_type == "issues":
+        action = payload.get("action", "unknown")
+        issue = payload.get("issue", {})
+        username = issue.get("user", {}).get("login", "unknown")
+        title = issue.get("title", "No title")
+        body = issue.get("body", "")
+        html_url = issue.get("html_url", "")
+        # Truncate body if it is too long for a concise summary
+        if len(body) > 200:
+            body = body[:200] + "..."
+        message = (
+            f"GitHub Issue {action} by {username}:\n"
+            f"Title: {title}\n"
+            f"URL: {html_url}\n"
+            f"Description: {body}"
+        )
+
     else:
         message = f"GitHub Event: {event_type}\nPayload: {json.dumps(payload, indent=2)}"
     

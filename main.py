@@ -43,7 +43,7 @@ async def github_webhook(
     background_tasks.add_task(send_to_telex, telex_payload)
     
     logging.info("Event processed and queued for forwarding to Telex")
-    return {"detail": "Event processed and queued for forwarding to Telex"}
+    return {"detail": "Event processed and forwarded to Telex"}
 
 if __name__ == "__main__":
     import uvicorn
