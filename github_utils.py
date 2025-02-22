@@ -11,10 +11,10 @@ def verify_github_signature(payload: bytes, signature: str, secret: str) -> bool
 def extract_username(event_type: str, payload: dict) -> str:
     """Extract the username based on the event type."""
     event_user_mapping = {
-        "push": lambda p: p.get("pusher", {}).get("name", "unknown"),
-        "pull_request": lambda p: p.get("pull_request", {}).get("user", {}).get("login", "unknown"),
-        "issues": lambda p: p.get("issue", {}).get("user", {}).get("login", "unknown"),
-        # Add more event types as needed
+        "push": lambda p: p.get("sender", {}).get("username", "unknown"),
+        "pull_request": lambda p: p.get("pull_request", {}).get("sender", {}).get("username", "unknown"),
+        "issues": lambda p: p.get("issue", {}).get("sender", {}).get("username", "unknown"),
+        "issue_comment": lambda p: p.get("comment", {}).get("sender", {}).get("username", "unknown"),
     }
     return event_user_mapping.get(event_type, lambda p: "unknown")(payload)
 
@@ -41,6 +41,37 @@ def create_telex_payload(event_type: str, payload: dict) -> dict:
             f"Title: {title}\n"
             f"URL: {html_url}\n"
             f"Description: {body}"
+        )
+    
+    elif event_type == "pull_request":
+        action = payload.get("action", "unknown")
+        pr = payload.get("pull_request", {})
+        username = payload.get("sender", {}).get("login", "unknown")
+        title = pr.get("title", "No title")
+        body = pr.get("body", "")
+        html_url = pr.get("html_url", "")
+        # Truncate body if it is too long for a concise summary
+        if len(body) > 200:
+            body = body[:200] + "..."
+        message = (
+            f"GitHub Pull Request {action} by {username}:\n"
+            f"Title: {title}\n"
+            f"URL: {html_url}\n"
+            f"Description: {body}"
+        )
+
+    elif event_type == "pull_request_review_comment":
+        comment = payload.get("comment", {})
+        username = payload.get("sender", {}).get("username", "unknown")
+        body = comment.get("body", "")
+        html_url = comment.get("html_url", "")
+        # Truncate body if it is too long for a concise summary
+        if len(body) > 200:
+            body = body[:200] + "..."
+        message = (
+            f"GitHub Pull Request Review Comment by {username}:\n"
+            f"URL: {html_url}\n"
+            f"Comment: {body}"
         )
 
     else:

@@ -9,6 +9,32 @@ from telex_utils import send_to_telex
 logging.basicConfig(level=logging.INFO)
 app = FastAPI(title="GitHub to Telex Integration")
 
+@app.get("/")
+async def read_root():
+    return {
+  "integration_id": "github-telex-integration",
+  "name": "GitHub to Telex Integration",
+  "description": "An integration that receives GitHub webhook events and forwards them to a Telex channel.",
+  "integration_type": "Output",
+  "settings": [
+    {
+      "label": "TELEX Webhook URL",
+      "type": "text",
+      "description": "The webhook URL of the Telex channel to which events will be forwarded.",
+      "default": "https://ping.telex.im/v1/webhooks/your-webhook-id",
+      "required": "true"
+    },
+    {
+      "label": "GitHub Secret",
+      "type": "text",
+      "description": "The secret used to verify GitHub webhook payload signatures.",
+      "default": "",
+      "required": "true"
+    }
+  ]
+}
+
+
 @app.post("/webhook")
 async def github_webhook(
     request: Request,
@@ -44,6 +70,8 @@ async def github_webhook(
     
     logging.info("Event processed and queued for forwarding to Telex")
     return {"detail": "Event processed and forwarded to Telex"}
+
+
 
 if __name__ == "__main__":
     import uvicorn
