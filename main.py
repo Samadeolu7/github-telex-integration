@@ -71,11 +71,19 @@ async def github_webhook(
         # For other event types, include a generic message.
         message = f"GitHub Event: {x_github_event}\nPayload: {json.dumps(payload, indent=2)}"
     
+    # Prepare the payload for Telex
+    telex_payload = {
+        "event_name": x_github_event,
+        "message": message,
+        "status": "success",
+        "username": pusher if x_github_event == "push" else "unknown"
+    }
+    
     # Send the summarized message to Telex via its webhook URL
     async with httpx.AsyncClient() as client:
         telex_response = await client.post(
             integration_config.telex_webhook_url,
-            content=json.dumps({"text": message}),
+            json=telex_payload,
             headers={"Content-Type": "application/json"}
         )
         if telex_response.status_code != 200:
