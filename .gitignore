@@ -1,3 +1,6 @@
 /my_env
 integrations.json
 .env
+__pycache__
+*.pyc
+test_main.py

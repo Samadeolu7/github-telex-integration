@@ -75,7 +75,8 @@ async def github_webhook(
     async with httpx.AsyncClient() as client:
         telex_response = await client.post(
             integration_config.telex_webhook_url,
-            json={"text": message}
+            content=json.dumps({"text": message}),
+            headers={"Content-Type": "application/json"}
         )
         if telex_response.status_code != 200:
             raise HTTPException(status_code=500, detail="Failed to send message to Telex")
