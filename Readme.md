@@ -82,4 +82,19 @@ This integration receives GitHub webhook events, processes them, and sends a sum
 
    ```bash
    pytest test.py
-```
+    ```
+
+## Deployment
+
+Deploy the integration to your chosen hosting provider (e.g., Render, Heroku, AWS). Ensure your deployed URL is publicly accessible. Once deployed, update your GitHub webhook configuration to point to the deployed URL (e.g., https://your-deployed-app.com/webhook).
+
+Screenshots
+Include screenshots that demonstrate the following:
+
+A git push event received by the integration.
+
+image showing commit message and author[commit.png]
+
+A message sent to the Telex channel for the git push event.
+
+image showing message sent to telex channel[telex.png]
