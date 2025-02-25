@@ -88,14 +88,15 @@ This integration receives GitHub webhook events, processes them, and sends a sum
 
 Deploy the integration to your chosen hosting provider (e.g., Render, Heroku, AWS). Ensure your deployed URL is publicly accessible. Once deployed, update your GitHub webhook configuration to point to the deployed URL (e.g., https://your-deployed-app.com/webhook).
 
-Screenshots
+## Screenshots
 Include screenshots that demonstrate the following:
 
-A git push event received by the integration.
+### A git push event received by the integration
 
-image showing commit message and author[commit.png]
+![Commit Message and Author](commit.png)
 
-A message sent to the Telex channel for the git push event.
+### A message sent to the Telex channel for the git push event
 
-image showing message sent to telex channel[telex.png]
-edited
+![Message Sent to Telex Channel](telex.png)
+
+![Message sent to telex channel](telex_proof.png)
