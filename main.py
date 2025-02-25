@@ -12,27 +12,30 @@ app = FastAPI(title="GitHub to Telex Integration")
 @app.get("/")
 async def read_root():
     return {
-  "integration_id": "github-telex-integration",
-  "name": "GitHub to Telex Integration",
-  "description": "An integration that receives GitHub webhook events and forwards them to a Telex channel.",
-  "integration_type": "Output",
-  "settings": [
-    {
-      "label": "TELEX Webhook URL",
-      "type": "text",
-      "description": "The webhook URL of the Telex channel to which events will be forwarded.",
-      "default": "https://ping.telex.im/v1/webhooks/your-webhook-id",
-      "required": "true"
-    },
-    {
-      "label": "GitHub Secret",
-      "type": "text",
-      "description": "The secret used to verify GitHub webhook payload signatures.",
-      "default": "",
-      "required": "true"
+        "data": {
+            "integration_id": "github-telex-integration",
+            "name": "GitHub to Telex Integration",
+            "description": "An integration that receives GitHub webhook events and forwards them to a Telex channel.",
+            "integration_type": "Output",
+            "settings": [
+                {
+                    "label": "TELEX Webhook URL",
+                    "type": "text",
+                    "description": "The webhook URL of the Telex channel to which events will be forwarded.",
+                    "default": "https://ping.telex.im/v1/webhooks/your-webhook-id",
+                    "required": "true"
+                },
+                {
+                    "label": "GitHub Secret",
+                    "type": "text",
+                    "description": "The secret used to verify GitHub webhook payload signatures.",
+                    "default": "",
+                    "required": "true"
+                }
+            ]
+        }
     }
-  ]
-}
+
 
 
 @app.post("/webhook")
