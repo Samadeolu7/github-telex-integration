@@ -98,3 +98,4 @@ image showing commit message and author[commit.png]
 A message sent to the Telex channel for the git push event.
 
 image showing message sent to telex channel[telex.png]
+edited
