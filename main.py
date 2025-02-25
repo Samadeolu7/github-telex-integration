@@ -29,7 +29,7 @@ async def read_root():
                     "label": "GitHub Secret",
                     "type": "text",
                     "description": "The secret used to verify GitHub webhook payload signatures.",
-                    "default": "",
+                    "default": "85a22e915f5828b81e100d5ad85e98d9e1990b42",
                     "required": "true"
                 }
             ]
